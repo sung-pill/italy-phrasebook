@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="이탈리아 회화">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="이탈리아 여행용 회화 카드 — 누르면 이탈리아어 발음이 나오고, 화면을 크게 보여줄 수 있어요.">
+<title>이탈리아어 여행 회화 | 손끝 여행 회화</title>
+<style>
+  :root{
+    --verde:#0f3d2e;
+    --verde-2:#175a43;
+    --ink:#17372c;
+    --sub:#5d7f72;
+    --sub-2:#7d9a8e;
+    --cream:#fbf8f1;
+    --ice:#eef6f1;
+    --ice-2:#dcebe2;
+    --terra:#c0563a;
+    --line:rgba(19,58,44,.10);
+    --card:#ffffff;
+    --shadow:0 8px 22px rgba(19,52,40,.08);
+    --shadow-s:0 4px 12px rgba(19,52,40,.07);
+    --r:18px;
+    --safe-b:env(safe-area-inset-bottom,0px);
+    --safe-t:env(safe-area-inset-top,0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(120% 70% at 50% -10%, #ffffff 0%, #fdfaf3 38%, #f8f1e4 70%, #f3ebdb 100%);
+    background-attachment:fixed;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:contain;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      radial-gradient(circle, rgba(176,150,110,.20) 1.2px, transparent 1.6px),
+      radial-gradient(circle, rgba(255,255,255,.95) 1.6px, transparent 2.2px);
+    background-size:54px 54px, 94px 94px;
+    background-position:0 0, 30px 42px;
+    opacity:.7;
+  }
+  .app{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:calc(var(--safe-t) + 12px) 14px calc(var(--safe-b) + 40px)}
+
+  /* ── 헤더 ── */
+  .hero{
+    position:relative;overflow:hidden;border-radius:24px;
+    background:linear-gradient(140deg,#08221a 0%,#10402f 52%,#1b6b4c 100%);
+    color:#fff;padding:22px 20px 18px;
+    box-shadow:0 12px 28px rgba(9,40,30,.22);
+  }
+  .hero::after{
+    content:"";position:absolute;right:-34px;top:-38px;width:170px;height:170px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, rgba(198,233,214,.26), rgba(120,200,170,.05) 65%, transparent 72%);
+    pointer-events:none;
+  }
+  .tricolore{
+    position:absolute;left:0;right:0;top:0;height:4px;pointer-events:none;
+    background:linear-gradient(90deg,#009246 0 33.34%,#f7fbf8 33.34% 66.68%,#ce2b37 66.68% 100%);
+    opacity:.92
+  }
+  .hero .mark{
+    position:absolute;right:4px;bottom:-16px;font-size:100px;line-height:1;color:#fff;opacity:.09;
+    pointer-events:none;user-select:none
+  }
+  .eyebrow{display:flex;align-items:center;gap:7px;font-size:11.5px;letter-spacing:1.4px;font-weight:800;color:#a5d9c1;text-transform:uppercase}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:#7fd7ae}
+  h1{margin:8px 0 0;font-size:23px;line-height:1.3;font-weight:800;letter-spacing:-.4px}
+  .hero p{margin:7px 0 0;font-size:13px;line-height:1.55;color:rgba(226,246,236,.82);max-width:300px}
+  .hero .tip{
+    margin-top:14px;display:inline-flex;align-items:center;gap:6px;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);
+    border-radius:999px;padding:7px 12px;font-size:11.5px;color:#ddf1e7;font-weight:600
+  }
+
+  /* ── 필터 바 ── */
+  .bar{
+    position:sticky;top:0;z-index:30;
+    margin:0 -14px 12px;padding:9px 14px 8px;
+    background:rgba(250,247,240,.88);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+    backdrop-filter:saturate(180%) blur(14px);
+    border-bottom:1px solid rgba(19,58,44,.07);
+  }
+  .chips{
+    display:flex;gap:7px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+    -webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 40px),transparent 100%);
+    mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 40px),transparent 100%);
+  }
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    flex:0 0 auto;appearance:none;border:1px solid var(--line);background:#fff;color:#41685a;
+    font:inherit;font-size:13.5px;font-weight:700;letter-spacing:-.2px;
+    min-height:42px;padding:10px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;
+    box-shadow:0 1px 2px rgba(19,52,40,.04);transition:background .16s,color .16s,transform .12s,border-color .16s
+  }
+  .chip:active{transform:scale(.96)}
+  .chip[aria-selected="true"]{background:var(--verde);border-color:var(--verde);color:#fff;box-shadow:0 6px 14px rgba(12,50,36,.22)}
+  .subbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 2px 0}
+  .count{font-size:11.5px;font-weight:700;color:var(--sub-2);letter-spacing:.2px}
+  .favbtn{
+    appearance:none;border:1px solid var(--line);background:#fff;color:#41685a;font:inherit;
+    font-size:12.5px;font-weight:800;padding:8px 13px;border-radius:999px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:5px;transition:all .16s
+  }
+  .favbtn .s{font-size:14px;line-height:1;color:#c3d6cb}
+  .favbtn[aria-pressed="true"]{background:linear-gradient(180deg,#ffd88a,#f6bd5c);border-color:#efb54e;color:#66450c;box-shadow:0 6px 14px rgba(220,160,40,.28)}
+  .favbtn[aria-pressed="true"] .s{color:#8a5d0a}
+
+  /* ── 카드 ── */
+  .list{display:grid;gap:11px}
+  .card{
+    position:relative;background:var(--card);border:1px solid rgba(19,58,44,.07);
+    border-radius:var(--r);padding:14px 15px 14px;box-shadow:var(--shadow);
+    animation:rise .28s ease both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .card .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-right:42px}
+  .tag{
+    font-size:11px;font-weight:800;letter-spacing:.1px;padding:4px 9px;border-radius:7px;
+    background:var(--ice);color:#3f6f5c;white-space:nowrap
+  }
+  .tag[data-cat="air"]{background:#e6f1fd;color:#2f6796}
+  .tag[data-cat="hotel"]{background:#efeafa;color:#5a4a8f}
+  .tag[data-cat="food"]{background:#fdf0e4;color:#95642f}
+  .tag[data-cat="shop"]{background:#e8f5ef;color:#2f7a5c}
+  .tag[data-cat="help"]{background:#fdeceb;color:#a4534b}
+  .star{
+    position:absolute;right:9px;top:9px;width:42px;height:42px;border:0;background:transparent;
+    font-size:21px;line-height:1;color:#b7cdc2;cursor:pointer;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;transition:transform .14s,color .14s;
+    -webkit-user-select:none;user-select:none
+  }
+  .star:active{transform:scale(.86)}
+  .star[aria-pressed="true"]{color:#f5b53f;text-shadow:0 2px 6px rgba(230,165,40,.35)}
+  .ko{margin:9px 0 0;font-size:16.5px;font-weight:750;letter-spacing:-.3px;line-height:1.4;color:var(--ink)}
+  .it{
+    margin:9px 0 0;font-size:19px;font-weight:600;line-height:1.5;color:#12392c;letter-spacing:.1px;
+    font-family:"Iowan Old Style",Georgia,"Palatino Linotype","Times New Roman",serif;
+    word-break:keep-all;overflow-wrap:anywhere
+  }
+  .rom{margin:6px 0 0;font-size:13.5px;line-height:1.5;color:var(--sub);letter-spacing:.1px}
+  .hint{margin:7px 0 0;font-size:12px;line-height:1.55;color:var(--sub-2)}
+  .hint::before{content:"TIP ";font-weight:800;font-size:10px;letter-spacing:.6px;color:#a9c1b5}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}
+  .btn{
+    appearance:none;border:0;font:inherit;border-radius:13px;height:48px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    font-size:14.5px;font-weight:800;letter-spacing:-.2px;transition:transform .12s,filter .16s;
+    -webkit-user-select:none;user-select:none
+  }
+  .btn:active{transform:scale(.97)}
+  .say{background:linear-gradient(180deg,#1c6b4d,#0e3f2d);color:#fff;box-shadow:0 6px 14px rgba(12,52,38,.22)}
+  .say.playing{background:linear-gradient(180deg,#2f9a6f,#176344);box-shadow:0 0 0 3px rgba(126,214,174,.35),0 6px 14px rgba(12,52,38,.22)}
+  .big{background:#eef6f1;color:#154035;border:1px solid #cfe6d9}
+  .empty{
+    text-align:center;padding:44px 20px;background:#fff;border:1px dashed #cfe0d5;border-radius:var(--r);
+    color:var(--sub);font-size:13.5px;line-height:1.7
+  }
+  .empty .e-ico{display:block;font-size:30px;margin-bottom:8px;color:#e2b660}
+
+  footer{margin:22px 4px 0;font-size:11.5px;line-height:1.75;color:var(--sub-2);text-align:center}
+  footer b{color:#5d7f72;font-weight:800}
+
+  /* ── 크게 보기 모달 ── */
+  .modal{
+    position:fixed;inset:0;z-index:100;display:none;flex-direction:column;
+    background:linear-gradient(160deg,#061a12 0%,#0d3527 55%,#12503a 100%);
+    color:#fff;padding:calc(var(--safe-t) + 8px) 0 calc(var(--safe-b) + 14px);
+  }
+  .modal.open{display:flex;animation:fade .18s ease both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .m-top{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 0;gap:10px}
+  .m-label{font-size:11.5px;font-weight:800;letter-spacing:1.2px;color:#8fc7ac;text-transform:uppercase}
+  .m-close{
+    width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.22);
+    background:rgba(255,255,255,.10);color:#fff;font-size:20px;line-height:1;cursor:pointer;
+    display:flex;align-items:center;justify-content:center
+  }
+  .m-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 20px;overflow-y:auto}
+  .m-it{
+    font-family:"Iowan Old Style",Georgia,"Palatino Linotype","Times New Roman",serif;
+    font-size:clamp(28px,8.4vw,62px);line-height:1.32;font-weight:700;letter-spacing:.005em;
+    word-break:keep-all;overflow-wrap:anywhere;text-shadow:0 4px 18px rgba(0,0,0,.25)
+  }
+  .m-it.len-s{font-size:clamp(40px,14vw,100px);line-height:1.24}
+  .m-it.len-m{font-size:clamp(32px,10.6vw,78px);line-height:1.3}
+  .m-it.len-l{font-size:clamp(26px,8vw,58px);line-height:1.36}
+  .m-rom{margin-top:20px;font-size:clamp(15px,4.4vw,21px);line-height:1.5;color:#bfe3d1;font-weight:600}
+  .m-ko{margin-top:10px;font-size:13.5px;line-height:1.5;color:#87b09c}
+  .m-say{
+    margin-top:26px;appearance:none;border:0;border-radius:16px;height:56px;padding:0 26px;
+    background:#eef8f2;color:#0f3d2e;font:inherit;font-size:15.5px;font-weight:800;
+    display:inline-flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.25)
+  }
+  .m-say:active{transform:scale(.97)}
+  .m-foot{text-align:center;font-size:11.5px;color:#80a894;padding:10px 16px 0}
+
+  .toast{
+    position:fixed;left:50%;bottom:calc(var(--safe-b) + 22px);transform:translate(-50%,14px);
+    background:rgba(10,36,26,.94);color:#eafaf1;font-size:12.5px;font-weight:600;
+    padding:11px 16px;border-radius:12px;z-index:200;opacity:0;pointer-events:none;
+    transition:opacity .2s,transform .2s;max-width:88vw;text-align:center
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (min-width:460px){
+    h1{font-size:25px}
+    .it{font-size:20px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <span class="tricolore" aria-hidden="true"></span>
+    <div class="eyebrow"><span class="dot"></span>이탈리아 · 로마 · 피렌체 · 밀라노</div>
+    <h1>눌러서 듣는<br>이탈리아어 회화 카드</h1>
+    <p>말이 안 나올 때, 화면을 보여주면 통합니다. 🔊로 발음을 듣고 👀로 크게 띄워 보여주세요.</p>
+    <span class="tip">☕ 에스프레소처럼 짧고 또렷하게</span>
+    <span class="mark" aria-hidden="true">🏛</span>
+  </header>
+
+  <div class="bar">
+    <div class="chips" id="chips" role="tablist" aria-label="상황별 분류"></div>
+    <div class="subbar">
+      <span class="count" id="count"></span>
+      <button class="favbtn" id="favOnly" type="button" aria-pressed="false"><span class="s">★</span>자주 쓰는 문장만</button>
+    </div>
+  </div>
+
+  <main class="list" id="list" aria-live="polite"></main>
+
+  <footer>
+    <b>발음 안내</b> · 한글 표기는 최대한 비슷하게 적은 것이라 실제 발음과 조금 다를 수 있어요.<br>
+    🔊 버튼을 누르면 기기의 이탈리아어 음성으로 읽어 줍니다. (음성이 안 나오면 무음 모드를 확인해 주세요.)
+  </footer>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mLabel" hidden>
+  <div class="m-top">
+    <span class="m-label" id="mLabel">화면 보여주기</span>
+    <button class="m-close" id="mClose" type="button" aria-label="닫기">✕</button>
+  </div>
+  <div class="m-body">
+    <div class="m-it" id="mIt" lang="it"></div>
+    <div class="m-rom" id="mRom"></div>
+    <div class="m-ko" id="mKo"></div>
+    <button class="m-say" id="mSay" type="button">🔊 다시 듣기</button>
+  </div>
+  <div class="m-foot">상대방에게 이 화면을 보여주세요</div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var CATS = [
+    { id: "all",   name: "전체" },
+    { id: "air",   name: "공항·교통" },
+    { id: "hotel", name: "호텔" },
+    { id: "food",  name: "식당·카페" },
+    { id: "shop",  name: "쇼핑" },
+    { id: "help",  name: "도움·긴급" }
+  ];
+
+  var PHRASES = [
+    /* ── 공항·교통 ── */
+    { id: "air1", cat: "air", ko: "공항버스 타는 곳이 어디예요?", it: "Dov'è la fermata dell'autobus per l'aeroporto?", rom: "도베 라 페르마타 델라우토부스 페르 라에로포르토", hint: "공항 직원에게 물으면 손가락으로 위치를 짚어 줍니다." },
+    { id: "air2", cat: "air", ko: "레오나르도 익스프레스 표는 어디서 사요?", it: "Dove posso comprare il biglietto del Leonardo Express?", rom: "도베 포소 콤프라레 일 빌리에토 델 레오나르도 익스프레스", hint: "피우미치노 공항에서 테르미니역까지 논스톱. 자동발매기나 창구에서 사요." },
+    { id: "air3", cat: "air", ko: "이 기차 테르미니역에 가나요?", it: "Questo treno va a Termini?", rom: "쿠에스토 트레노 바 아 테르미니", hint: "타기 전에 승강장 전광판의 행선지를 한 번 더 확인하세요." },
+    { id: "air4", cat: "air", ko: "몇 번 승강장에서 출발해요?", it: "Da quale binario parte?", rom: "다 쿠알레 비나리오 파르테", hint: "승강장은 'Binario'. 표에는 보통 번호가 없고 전광판에서 확인해요." },
+    { id: "air5", cat: "air", ko: "표는 어디서 검표(날인)해요?", it: "Dove devo convalidare il biglietto?", rom: "도베 데보 콘발리다레 일 빌리에토", hint: "이탈리아 기차는 타기 전 승강장 기계에 표를 넣어 날인해야 해요. 안 하면 벌금이 붙어요." },
+    { id: "air6", cat: "air", ko: "이 버스 시내 중심에 가나요?", it: "Questo autobus va in centro?", rom: "쿠에스토 아우토부스 바 인 첸트로", hint: "로마 시내는 'centro storico'. 방향이 반대면 맞은편 정류장을 쓰세요." },
+    { id: "air7", cat: "air", ko: "콜로세오까지 얼마예요?", it: "Quanto costa fino al Colosseo?", rom: "쿠안토 코스타 피노 알 콜로세오", hint: "택시는 타기 전에 흥정하지 말고 미터기를 켜 달라고 하세요." },
+    { id: "air8", cat: "air", ko: "표 한 장 주세요", it: "Un biglietto, per favore.", rom: "운 빌리에토, 페르 파보레", hint: "왕복은 andata e ritorno. '편도'는 solo andata예요." },
+    { id: "air9", cat: "air", ko: "몇 정류장 남았어요?", it: "Quante fermate mancano?", rom: "쿠안테 페르마테 만카노", hint: "'fermata'가 정류장·정거장이에요." },
+    { id: "air10", cat: "air", ko: "다음 정류장에서 내릴게요", it: "Devo scendere alla prossima fermata.", rom: "데보 셴데레 알라 프로시마 페르마타", hint: "버스 문 옆 빨간 STOP 버튼을 누르거나 기사에게 말해요." },
+    { id: "air11", cat: "air", ko: "걸어서 갈 수 있나요?", it: "Si può andare a piedi?", rom: "시 푸오 안다레 아 피에디", hint: "로마·피렌체 구시가는 골목이 좁아 도보가 더 빠를 때가 많아요." },
+    { id: "air12", cat: "air", ko: "택시 정류장이 어디예요?", it: "Dov'è la stazione dei taxi?", rom: "도베 라 스타치오네 데이 탁시", hint: "길에서 잡지 말고 정식 승강장에서 타면 바가지가 없어요." },
+
+    /* ── 호텔 ── */
+    { id: "hotel1", cat: "hotel", ko: "체크인하고 싶어요", it: "Vorrei fare il check-in, per favore.", rom: "보레이 파레 일 체크인, 페르 파보레", hint: "'vorrei'는 '~하고 싶어요'의 공손한 표현이에요." },
+    { id: "hotel2", cat: "hotel", ko: "예약했습니다", it: "Ho una prenotazione a nome Choi.", rom: "오 우나 프레노타치오네 아 노메 초이", hint: "예약 화면을 함께 보여주면 훨씬 빨라요." },
+    { id: "hotel3", cat: "hotel", ko: "여권 여기 있습니다", it: "Ecco il mio passaporto.", rom: "에코 일 미오 파사포르토", hint: "이탈리아 숙소는 여권을 스캔해 두는 곳이 많아요." },
+    { id: "hotel4", cat: "hotel", ko: "짐을 맡길 수 있을까요?", it: "Posso lasciare i bagagli?", rom: "포소 라샤레 이 바갈리", hint: "체크인 전·체크아웃 후 모두 프런트에 맡길 수 있어요." },
+    { id: "hotel5", cat: "hotel", ko: "와이파이 비밀번호가 뭐예요?", it: "Qual è la password del Wi-Fi?", rom: "쿠알 에 라 파스워드 델 와이파이", hint: "방 카드나 키홀더에 적혀 있는 경우가 많아요." },
+    { id: "hotel6", cat: "hotel", ko: "수건 한 장 더 주세요", it: "Mi può dare un altro asciugamano?", rom: "미 푸오 다레 운 알트로 아슈가마노", hint: "어메니티는 'prodotti da bagno'. 샴푸는 shampoo예요." },
+    { id: "hotel7", cat: "hotel", ko: "방이 너무 추워요", it: "La camera è troppo fredda.", rom: "라 카메라 에 트로포 프레다", hint: "난방이 안 될 땐 'Il riscaldamento non funziona'라고 하세요." },
+    { id: "hotel8", cat: "hotel", ko: "에어컨이 안 돼요", it: "L'aria condizionata non funziona.", rom: "라리아 콘디치오나타 논 푼치오나", hint: "한여름 로마·피렌체는 에어컨이 필수예요." },
+    { id: "hotel9", cat: "hotel", ko: "조식은 몇 시부터예요?", it: "A che ora è la colazione?", rom: "아 케 오라 에 라 콜라치오네", hint: "이탈리아 조식은 보통 7~10시, 짧고 간단해요." },
+    { id: "hotel10", cat: "hotel", ko: "조식은 어디서 먹어요?", it: "Dove si fa la colazione?", rom: "도베 시 파 라 콜라치오네", hint: "옥상 테라스에서 주는 곳도 많아요." },
+    { id: "hotel11", cat: "hotel", ko: "늦게 체크아웃해도 될까요?", it: "Posso fare il check-out più tardi?", rom: "포소 파레 일 체크아웃 피우 타르디", hint: "가능하면 무료, 성수기엔 추가 요금이 붙기도 해요." },
+    { id: "hotel12", cat: "hotel", ko: "택시를 불러 주실 수 있나요?", it: "Può chiamarmi un taxi?", rom: "푸오 키아마르미 운 탁시", hint: "짐이 많으면 20~30분 전에 미리 부탁하세요." },
+
+    /* ── 식당·카페 ── */
+    { id: "food1", cat: "food", ko: "두 명입니다", it: "Un tavolo per due, per favore.", rom: "운 타볼로 페르 두에, 페르 파보레", hint: "입구에서 'Quante persone?' 하고 물어요. 숫자만 말해도 통해요." },
+    { id: "food2", cat: "food", ko: "영어 메뉴 있나요?", it: "C'è il menù in inglese?", rom: "체 일 메누 인 인글레세", hint: "관광지 식당은 대부분 영어 메뉴가 있어요." },
+    { id: "food3", cat: "food", ko: "이거 하나 주세요", it: "Questo, per favore.", rom: "쿠에스토, 페르 파보레", hint: "메뉴를 손가락으로 가리키며 말하면 확실해요." },
+    { id: "food4", cat: "food", ko: "추천 메뉴가 뭐예요?", it: "Che cosa mi consiglia?", rom: "케 코사 미 콘시글리아", hint: "그날의 제철 요리를 물어보면 실패가 적어요." },
+    { id: "food5", cat: "food", ko: "무탄산 물 주세요", it: "Acqua naturale, per favore.", rom: "아쿠아 나투랄레, 페르 파보레", hint: "탄산수는 acqua frizzante. 식당에선 병물을 시켜요." },
+    { id: "food6", cat: "food", ko: "에스프레소 한 잔 주세요", it: "Un caffè, per favore.", rom: "운 카페, 페르 파보레", hint: "이탈리아에서 'caffè'는 곧 에스프레소예요. 서서 마시면 더 싸요." },
+    { id: "food7", cat: "food", ko: "카푸치노 한 잔 주세요", it: "Un cappuccino, per favore.", rom: "운 카푸치노, 페르 파보레", hint: "카푸치노는 아침에 마시는 게 관례예요. 식후엔 caffè." },
+    { id: "food8", cat: "food", ko: "자릿세(코페르토)도 포함인가요?", it: "Il coperto è incluso?", rom: "일 코페르토 에 인클루소", hint: "많은 식당이 1인당 2~3유로의 자릿세를 받아요. 팁은 보통 안 줘요." },
+    { id: "food9", cat: "food", ko: "계산서 주세요", it: "Il conto, per favore.", rom: "일 콘토, 페르 파보레", hint: "계산대에서 내는 곳도 많아요. 'Scontrino'는 영수증이에요." },
+    { id: "food10", cat: "food", ko: "포장해 주세요", it: "Da portare via, per favore.", rom: "다 포르타레 비아, 페르 파보레", hint: "이탈리아는 포장 문화가 드물어 작은 식당에선 어려울 수 있어요." },
+    { id: "food11", cat: "food", ko: "견과류 알레르기가 있어요", it: "Sono allergico alle noci.", rom: "소노 알레르지코 알레 노치", hint: "여성은 'allergica'. 견과류는 frutta secca라고도 해요." },
+    { id: "food12", cat: "food", ko: "치즈는 빼주세요", it: "Senza formaggio, per favore.", rom: "센차 포르마조, 페르 파보레", hint: "'senza + 재료' = 빼주세요. 마늘은 aglio, 양파는 cipolla." },
+
+    /* ── 쇼핑 ── */
+    { id: "shop1", cat: "shop", ko: "이거 얼마예요?", it: "Quanto costa questo?", rom: "쿠안토 코스타 쿠에스토", hint: "복수는 'Quanto costano questi?'예요." },
+    { id: "shop2", cat: "shop", ko: "너무 비싸요", it: "È troppo caro.", rom: "에 트로포 카로", hint: "시장·노점에서만. 일반 상점에서 깎는 건 실례예요." },
+    { id: "shop3", cat: "shop", ko: "봉투 하나 주세요", it: "Mi dà un sacchetto?", rom: "미 다 운 사케토", hint: "마트 봉투는 유로가 붙어요. '봉투 필요 없어요'는 Non serve." },
+    { id: "shop4", cat: "shop", ko: "카드로 계산할게요", it: "Pago con la carta.", rom: "파고 콘 라 카르타", hint: "작은 가게·시장은 현금만 받기도 해요." },
+    { id: "shop5", cat: "shop", ko: "현금으로 계산할게요", it: "Pago in contanti.", rom: "파고 인 콘탄티", hint: "1,000유로 이상 현금 결제는 제한이 있어요." },
+    { id: "shop6", cat: "shop", ko: "면세(Tax Free) 되나요?", it: "È possibile il Tax Free?", rom: "에 포시빌레 일 택스 프리", hint: "여권을 보여주고 영수증을 챙기세요. 환급은 공항에서 받아요." },
+    { id: "shop7", cat: "shop", ko: "영수증 주세요", it: "Mi può dare lo scontrino?", rom: "미 푸오 다레 로 스콘트리노", hint: "면세 환급에는 영수증이 꼭 필요해요." },
+    { id: "shop8", cat: "shop", ko: "더 큰 사이즈 있나요?", it: "Avete una taglia più grande?", rom: "아베테 우나 탈리아 피우 그란데", hint: "작은 사이즈는 più piccola. 신발 사이즈는 numero예요." },
+    { id: "shop9", cat: "shop", ko: "입어봐도 될까요?", it: "Posso provarlo?", rom: "포소 프로바르로", hint: "탈의실은 camerino. 보통 한 번에 2~3벌까지 가능해요." },
+    { id: "shop10", cat: "shop", ko: "교환할 수 있나요?", it: "Si può cambiare?", rom: "시 푸오 캄비아레", hint: "이탈리아는 교환·환불 규정이 나라마다 매장마다 달라요. 영수증을 챙기세요." },
+    { id: "shop11", cat: "shop", ko: "다른 색도 있나요?", it: "Avete un altro colore?", rom: "아베테 운 알트로 콜로레", hint: "색 이름: nero(검정), bianco(흰색), rosso(빨강), blu(파랑)." },
+    { id: "shop12", cat: "shop", ko: "선물용으로 포장해 주실 수 있나요?", it: "Me lo può incartare come regalo?", rom: "메 로 푸오 인카르타레 코메 레갈로", hint: "포장은 보통 무료지만 시간이 걸려요." },
+
+    /* ── 도움·긴급 ── */
+    { id: "help1", cat: "help", ko: "실례합니다 / 저기요", it: "Scusi!", rom: "스쿠지", hint: "말을 걸 때, 사과할 때 모두 쓰는 만능 한마디." },
+    { id: "help2", cat: "help", ko: "정말 감사합니다", it: "Grazie mille!", rom: "그라치에 밀레", hint: "'천 번 감사'라는 뜻의 가장 흔한 감사 표현이에요." },
+    { id: "help3", cat: "help", ko: "화장실이 어디예요?", it: "Dov'è il bagno?", rom: "도베 일 바뇨", hint: "공공 화장실은 유료인 곳이 있고, 카페에선 구매 후 이용해요." },
+    { id: "help4", cat: "help", ko: "사진 좀 찍어 주실 수 있나요?", it: "Mi scatta una foto, per favore?", rom: "미 스카타 우나 포토, 페르 파보레", hint: "휴대폰을 건네며 이 문장을 보여주면 충분해요." },
+    { id: "help5", cat: "help", ko: "영어 하세요?", it: "Parla inglese?", rom: "파를라 인글레세", hint: "관광지 밖에서는 잘 통하지 않을 수 있어요. 이 화면을 보여주세요." },
+    { id: "help6", cat: "help", ko: "천천히 말해 주세요", it: "Può parlare più lentamente?", rom: "푸오 파를라레 피우 렌타멘테", hint: "한 번 더 듣고 싶을 땐 'Come?' 또는 'Scusi?'예요." },
+    { id: "help7", cat: "help", ko: "이 주소로 가 주세요", it: "Mi porta a questo indirizzo?", rom: "미 포르타 아 쿠에스토 인디리초", hint: "지도나 예약 화면을 함께 보여주세요." },
+    { id: "help8", cat: "help", ko: "소매치기를 당했어요", it: "Mi hanno rubato il portafoglio.", rom: "미 안노 루바토 일 포르타폴리오", hint: "로마 지하철·관광지가 특히 위험해요. 가방은 몸 앞쪽으로." },
+    { id: "help9", cat: "help", ko: "약국이 어디예요?", it: "Dov'è la farmacia?", rom: "도베 라 파르마치아", hint: "초록 십자 간판이 약국이에요. 야간 당번은 밖에 붙어 있어요." },
+    { id: "help10", cat: "help", ko: "병원에 가야 해요", it: "Devo andare in ospedale.", rom: "데보 안다레 인 오스페달레", hint: "응급은 pronto soccorso. 여행자보험 증서를 챙기세요." },
+    { id: "help11", cat: "help", ko: "경찰을 불러 주세요", it: "Chiami la polizia, per favore.", rom: "키아미 라 폴리치아, 페르 파보레", hint: "긴급 전화는 112(통합), 경찰 113, 구급 118이에요." },
+    { id: "help12", cat: "help", ko: "여권을 잃어버렸어요", it: "Ho perso il passaporto.", rom: "오 페르소 일 파사포르토", hint: "먼저 경찰에 신고하고 주이탈리아 한국대사관(로마)에 연락하세요." }
+  ];
+
+  var CAT_NAME = {};
+  CATS.forEach(function (c) { CAT_NAME[c.id] = c.name; });
+
+  var LS_KEY = "italy-phrases-fav-v1";
+  var state = { cat: "all", favOnly: false, favs: loadFavs() };
+
+  var els = {
+    chips: document.getElementById("chips"),
+    list: document.getElementById("list"),
+    count: document.getElementById("count"),
+    favOnly: document.getElementById("favOnly"),
+    modal: document.getElementById("modal"),
+    mIt: document.getElementById("mIt"),
+    mRom: document.getElementById("mRom"),
+    mKo: document.getElementById("mKo"),
+    mSay: document.getElementById("mSay"),
+    mClose: document.getElementById("mClose"),
+    toast: document.getElementById("toast")
+  };
+
+  /* ── 즐겨찾기 저장 ── */
+  function loadFavs() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr.filter(function (v) { return typeof v === "string"; }) : [];
+    } catch (e) { return []; }
+  }
+  function saveFavs() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state.favs)); } catch (e) { /* 저장 불가(사생활 모드 등) */ }
+  }
+  function isFav(id) { return state.favs.indexOf(id) !== -1; }
+  function toggleFav(id) {
+    var i = state.favs.indexOf(id);
+    if (i === -1) state.favs.push(id); else state.favs.splice(i, 1);
+    saveFavs();
+  }
+
+  /* ── 음성 재생 ── */
+  var synth = window.speechSynthesis || null;
+  var itVoice = null;
+  var speakSeq = 0;
+  var activeSayBtn = null;
+  var watchdog = null;
+
+  function pickItVoice() {
+    if (!synth || !synth.getVoices) return null;
+    var voices = synth.getVoices() || [];
+    var it = voices.filter(function (v) { return /^it/i.test(v.lang || ""); });
+    if (!it.length) return null;
+    return it.filter(function (v) { return /Alice|Luca|Elsa|Diego|Isotta|Federica|Google/i.test(v.name || ""); })[0]
+      || it.filter(function (v) { return v.localService; })[0]
+      || it[0];
+  }
+  if (synth) {
+    itVoice = pickItVoice();
+    if (typeof synth.addEventListener === "function") {
+      synth.addEventListener("voiceschanged", function () { itVoice = pickItVoice(); });
+    } else {
+      synth.onvoiceschanged = function () { itVoice = pickItVoice(); };
+    }
+  }
+
+  function resetSayBtn() {
+    if (activeSayBtn) {
+      activeSayBtn.classList.remove("playing");
+      activeSayBtn.textContent = "🔊 듣기";
+      activeSayBtn = null;
+    }
+  }
+
+  function stopSpeech() {
+    speakSeq++;
+    if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+    if (synth) { try { synth.cancel(); } catch (e) {} }
+    resetSayBtn();
+  }
+
+  function speak(text, btn) {
+    if (!synth) { toast("이 브라우저는 음성 재생을 지원하지 않아요. 발음 가이드를 봐 주세요."); return; }
+
+    if (btn && activeSayBtn === btn) { stopSpeech(); return; }
+
+    var seq = ++speakSeq;
+    if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+    resetSayBtn();
+    try { synth.cancel(); } catch (e) {}
+
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "it-IT";
+    u.rate = 0.85;
+    u.pitch = 1;
+    u.volume = 1;
+    if (!itVoice) itVoice = pickItVoice();
+    if (itVoice) u.voice = itVoice;
+
+    function finish() {
+      if (seq !== speakSeq) return;
+      if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+      resetSayBtn();
+    }
+    u.onend = finish;
+    u.onerror = finish;
+
+    if (btn) {
+      activeSayBtn = btn;
+      btn.classList.add("playing");
+      btn.textContent = "⏸ 재생 중";
+    }
+
+    /* iOS Safari: 클릭 핸들러 안에서 곧바로 speak()를 호출해야 소리가 나요. */
+    try { synth.speak(u); } catch (e) { resetSayBtn(); }
+    if (synth.paused) { try { synth.resume(); } catch (e) {} }
+
+    /* onend가 오지 않는 기기 대비 안전장치 */
+    watchdog = setTimeout(finish, 1400 + text.length * 130);
+  }
+
+  /* ── 토스트 ── */
+  var toastTimer = null;
+  function toast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { els.toast.classList.remove("show"); }, 2400);
+  }
+
+  /* ── 목록 그리기 ── */
+  function filtered() {
+    return PHRASES.filter(function (p) {
+      if (state.favOnly && !isFav(p.id)) return false;
+      if (state.cat !== "all" && p.cat !== state.cat) return false;
+      return true;
+    });
+  }
+
+  function cardHTML(p) {
+    var fav = isFav(p.id);
+    return '' +
+      '<article class="card" data-id="' + p.id + '">' +
+        '<div class="top"><span class="tag" data-cat="' + p.cat + '">' + CAT_NAME[p.cat] + '</span></div>' +
+        '<button class="star" type="button" data-star="' + p.id + '" aria-pressed="' + (fav ? "true" : "false") + '" ' +
+          'aria-label="' + (fav ? "즐겨찾기 해제" : "즐겨찾기에 추가") + '">' + (fav ? "★" : "☆") + '</button>' +
+        '<p class="ko">' + p.ko + '</p>' +
+        '<p class="it" lang="it">' + p.it + '</p>' +
+        '<p class="rom">' + p.rom + '</p>' +
+        (p.hint ? '<p class="hint">' + p.hint + '</p>' : '') +
+        '<div class="row">' +
+          '<button class="btn say" type="button" data-say="' + p.id + '">🔊 듣기</button>' +
+          '<button class="btn big" type="button" data-big="' + p.id + '">👀 크게 보기</button>' +
+        '</div>' +
+      '</article>';
+  }
+
+  function byId(id) {
+    for (var i = 0; i < PHRASES.length; i++) if (PHRASES[i].id === id) return PHRASES[i];
+    return null;
+  }
+
+  function render() {
+    var items = filtered();
+
+    if (!items.length) {
+      els.list.innerHTML = '<div class="empty"><span class="e-ico">★</span>' +
+        (state.favOnly ? "아직 즐겨찾기한 문장이 없어요.<br>카드 오른쪽 ☆을 눌러 모아 두세요."
+                       : "이 분류에는 문장이 없어요.") + '</div>';
+    } else {
+      els.list.innerHTML = items.map(cardHTML).join("");
+    }
+
+    els.count.textContent = state.favOnly
+      ? "즐겨찾기 " + items.length + "개"
+      : "문장 " + items.length + "개";
+
+    /* 이벤트 연결 (클릭 핸들러 안에서 바로 발화) */
+    var sayBtns = els.list.querySelectorAll("[data-say]");
+    for (var i = 0; i < sayBtns.length; i++) {
+      sayBtns[i].addEventListener("click", function () {
+        var p = byId(this.getAttribute("data-say"));
+        if (p) speak(p.it, this);
+      });
+    }
+    var bigBtns = els.list.querySelectorAll("[data-big]");
+    for (var j = 0; j < bigBtns.length; j++) {
+      bigBtns[j].addEventListener("click", function () {
+        openModal(this.getAttribute("data-big"));
+      });
+    }
+    var stars = els.list.querySelectorAll("[data-star]");
+    for (var k = 0; k < stars.length; k++) {
+      stars[k].addEventListener("click", function () {
+        var id = this.getAttribute("data-star");
+        toggleFav(id);
+        var on = isFav(id);
+        this.setAttribute("aria-pressed", on ? "true" : "false");
+        this.setAttribute("aria-label", on ? "즐겨찾기 해제" : "즐겨찾기에 추가");
+        this.textContent = on ? "★" : "☆";
+        if (state.favOnly) render();
+        else els.count.textContent = "문장 " + filtered().length + "개";
+      });
+    }
+
+    /* 재생 중이던 버튼이 사라졌으면 정리 */
+    if (activeSayBtn && !document.body.contains(activeSayBtn)) {
+      activeSayBtn = null;
+    }
+  }
+
+  function renderChips() {
+    els.chips.innerHTML = CATS.map(function (c) {
+      return '<button class="chip" type="button" role="tab" data-cat="' + c.id + '" aria-selected="' +
+        (state.cat === c.id ? "true" : "false") + '">' + c.name + '</button>';
+    }).join("");
+    var chips = els.chips.querySelectorAll(".chip");
+    for (var i = 0; i < chips.length; i++) {
+      chips[i].addEventListener("click", function () {
+        state.cat = this.getAttribute("data-cat");
+        var all = els.chips.querySelectorAll(".chip");
+        for (var n = 0; n < all.length; n++) {
+          all[n].setAttribute("aria-selected", all[n] === this ? "true" : "false");
+        }
+        stopSpeech();
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+  }
+
+  /* ── 크게 보기 모달 ── */
+  var lastFocus = null;
+  var modalPhrase = null;
+
+  function openModal(id) {
+    var p = byId(id);
+    if (!p) return;
+    modalPhrase = p;
+    lastFocus = document.activeElement;
+    els.mIt.textContent = p.it;
+    var n = p.it.length;
+    els.mIt.className = "m-it" + (n <= 14 ? " len-s" : n <= 24 ? " len-m" : n <= 36 ? " len-l" : "");
+    els.mRom.textContent = p.rom;
+    els.mKo.textContent = p.ko;
+    els.modal.hidden = false;
+    els.modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+    els.mSay.textContent = "🔊 다시 듣기";
+    try { els.mClose.focus({ preventScroll: true }); } catch (e) { els.mClose.focus(); }
+  }
+
+  function closeModal() {
+    if (!modalPhrase) return;
+    stopSpeech();
+    els.modal.classList.remove("open");
+    els.modal.hidden = true;
+    document.body.style.overflow = "";
+    modalPhrase = null;
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus({ preventScroll: true }); } catch (e) {} }
+  }
+
+  els.mClose.addEventListener("click", closeModal);
+  els.modal.addEventListener("click", function (e) {
+    if (e.target === els.modal) closeModal();
+  });
+  els.mSay.addEventListener("click", function () {
+    if (modalPhrase) speak(modalPhrase.it, null);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && modalPhrase) closeModal();
+  });
+
+  /* ── 즐겨찾기 토글 ── */
+  els.favOnly.addEventListener("click", function () {
+    state.favOnly = !state.favOnly;
+    this.setAttribute("aria-pressed", state.favOnly ? "true" : "false");
+    stopSpeech();
+    render();
+  });
+
+  /* ── 화면이 가려지면 소리 정지 ── */
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) stopSpeech();
+  });
+
+  renderChips();
+  render();
+})();
+</script>
+</body>
+</html>
